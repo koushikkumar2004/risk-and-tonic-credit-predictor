@@ -20,13 +20,14 @@ const applyLoan = async (req, res) => {
     try {
         // 1. Send data to Flask ML API for prediction
         let mlResponse;
+        const flaskUrl = (process.env.FLASK_API_URL || 'http://127.0.0.1:5001').replace('localhost', '127.0.0.1');
         try {
-            mlResponse = await axios.post(`${process.env.FLASK_API_URL}/api/predict`, {
+            mlResponse = await axios.post(`${flaskUrl}/api/predict`, {
                 age, income, employmentStatus, existingLoans,
                 creditScore, loanAmount, maritalStatus, paymentHistory
             });
         } catch (mlError) {
-            console.error('ML API Error:', mlError);
+            console.error('ML API Error:', mlError.message);
             return res.status(500).json({ message: 'Error getting ML prediction. Is Flask API running?' });
         }
 
