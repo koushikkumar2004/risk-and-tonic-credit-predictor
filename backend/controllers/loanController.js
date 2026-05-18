@@ -27,8 +27,9 @@ const applyLoan = async (req, res) => {
                 creditScore, loanAmount, maritalStatus, paymentHistory
             });
         } catch (mlError) {
-            console.error('ML API Error:', mlError.message);
-            return res.status(500).json({ message: 'Error getting ML prediction. Is Flask API running?' });
+            console.error('ML API Error:', mlError.message, mlError.response?.data);
+            const errorDetail = mlError.response?.data?.error || mlError.message;
+            return res.status(500).json({ message: `ML API Error: ${errorDetail} (Target: ${flaskUrl})` });
         }
 
         const { riskLevel, probability } = mlResponse.data;
